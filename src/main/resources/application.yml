@@ -1,12 +1,12 @@
 cloud:
   aws:
     region:
-      static: region-name
+      static: eu-west-1
       auto: false
     stack:
       auto: false
     credentials:
-      access-key: access-key
-      secret-key: secret-key
+      access-key: xxxxx
+      secret-key: xxxxx
     end-point:
-      uri: end-point-uri
+      uri: https://sqs.eu-west-1.amazonaws.com/xxxxx/MyQueue

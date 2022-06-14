@@ -1,33 +1,36 @@
 package com.example.sqs.sender;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
+@RequestMapping("/sqs")
 public class MessageSender {
 
-    @Value("${cloud.aws.end-point.uri}")
-    private String endpoint;
+  @Value("${cloud.aws.end-point.uri}")
+  private String endpoint;
 
-    @Autowired
-    private QueueMessagingTemplate queueMessagingTemplate;
+  @Autowired
+  private QueueMessagingTemplate queueMessagingTemplate;
 
 
-    @GetMapping("/send/{message}/{groupId}/{deDupId}")
-    public void send(@PathVariable(value = "message") String message,
-                     @PathVariable(value = "groupId") String groupId,
-                     @PathVariable(value = "deDupId") String deDupId){
-       Message payload = MessageBuilder.withPayload(message)
-               .setHeader("message-group-id", groupId)
-               .setHeader("message-deduplication-id", deDupId)
-               .build();
-       queueMessagingTemplate.send(endpoint, payload);
-    }
+  @PostMapping("/send")
+  public void send(@RequestBody String message) {
+    Message payload = MessageBuilder.withPayload(message)
+        .setHeader("message-group-id", "group1")
+        .setHeader("message-duplication-id", "dedup1")
+        .build();
+    log.info("Sended message {} ", message);
+    queueMessagingTemplate.send(endpoint, payload);
+  }
 }
